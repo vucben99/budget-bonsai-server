@@ -1,6 +1,6 @@
 import axios from "axios"
 import { z } from "zod"
-import { EnvSchemaType } from "../index"
+import { EnvSchemaType } from "../utils/envParser"
 
 const {
   GOOGLE_CLIENT_ID,

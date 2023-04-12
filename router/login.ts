@@ -3,7 +3,7 @@ import axios from 'axios'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { User } from '../models/User'
 import verifyToken from '../middleware/verifyToken'
-import { EnvSchemaType } from '../index'
+import { EnvSchemaType } from '../utils/envParser'
 
 const router = express.Router()
 
