@@ -1,52 +1,55 @@
-import express, { Request, Response } from 'express'
-import axios from 'axios'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import express from 'express'
+import jwt from 'jsonwebtoken'
+import { z } from 'zod'
 import { User } from '../models/User'
-import verifyToken from '../middleware/verifyToken'
 import { EnvSchemaType } from '../utils/envParser'
+import { verifyRequest } from '../middleware/verifyRequest'
+import { getIdToken } from '../api/google'
+import { safeParse } from '../utils/safeParse'
 
 const router = express.Router()
 
-const {
-  GOOGLE_CLIENT_ID,
-  GOOGLE_CLIENT_SECRET,
-  JWT_SECRET
-} = process.env as EnvSchemaType
+const { JWT_SECRET } = process.env as EnvSchemaType
 
-
-// ! Parseolni Zoddal a requestet
-router.post('/login', async (req, res) => {
-  const googleResponse = await axios.post('https://oauth2.googleapis.com/token', { // ! trycatch
-    code: req.body.code,
-    client_id: GOOGLE_CLIENT_ID,
-    client_secret: GOOGLE_CLIENT_SECRET,
-    redirect_uri: 'http://localhost:5173/finishlogin',
-    grant_type: 'authorization_code'
-  })
-
-  console.log(googleResponse.data)
-
-  const userData: any = jwt.decode(googleResponse.data.id_token)
-  console.log(userData)
-
-  const foundUser = await User.findOne({ sub: userData?.sub })
-  if (!foundUser) await User.create({ sub: userData?.sub, email: userData?.email, last_login: new Date() })
-  else await User.findOneAndUpdate({ sub: userData?.sub }, { last_login: new Date() })
-
-
-  const user = await User.findOne({ sub: userData?.sub })
-  const ownJwtPayload: JwtPayload = { id: user?._id }
-  const sessionToken = jwt.sign(ownJwtPayload, JWT_SECRET, { expiresIn: '24h' })
-
-  res.status(200).json({ sessionToken })
+const AuthCodeRequestSchema = z.object({
+  code: z.string().nonempty()
 })
+type AuthCodeRequest = z.infer<typeof AuthCodeRequestSchema>
 
-router.get('/public', (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Public content' })
+const UserObjectSchema = z.object({
+  sub: z.string(),
+  email: z.string().email(),
 })
+type UserObject = z.infer<typeof UserObjectSchema>
 
-router.get('/private', verifyToken, (req: Request, res: Response) => {
-  res.status(200).json({ message: 'Private content' })
+router.post('/', verifyRequest(AuthCodeRequestSchema), async (req, res) => {
+
+  const reqData = req.body as AuthCodeRequest
+
+  try {
+    // Get id_token from Google
+    const idToken = await getIdToken(reqData.code)
+    if (!idToken) return res.sendStatus(401)
+
+    // Decode and parse id_token
+    const idTokenPayload: unknown = jwt.decode(idToken)
+    const userObject = safeParse(UserObjectSchema, idTokenPayload)
+    console.log("Parsed ID_TOKEN:", userObject)
+    if (!userObject) return res.sendStatus(500)
+
+    // Handle db stuff
+    const user = await User.findOne({ sub: userObject.sub })
+    if (user) await User.updateOne({ sub: userObject.sub }, { $set: { last_login: new Date() } })
+    else await User.create({ sub: userObject.sub, email: userObject.email, last_login: new Date() })
+
+    // Sign JWT
+    const sessionToken = jwt.sign({ sub: userObject.sub }, JWT_SECRET, { expiresIn: "1h" })
+    res.json({ sessionToken })
+
+  } catch (error) {
+    console.error(error)
+    res.status(500)
+  }
 })
 
 export default router
