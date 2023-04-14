@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { User } from '../models/User'
 import { EnvSchemaType } from '../utils/envParser'
-import { verifyRequest } from '../middleware/verifyRequest'
+import verifyRequestSchema from '../middleware/verifyRequestSchema'
 import { getIdToken } from '../api/google'
 import { safeParse } from '../utils/safeParse'
 
@@ -16,13 +16,15 @@ const AuthCodeRequestSchema = z.object({
 })
 type AuthCodeRequest = z.infer<typeof AuthCodeRequestSchema>
 
-const UserObjectSchema = z.object({
+export const UserObjectSchema = z.object({
   sub: z.string(),
   email: z.string().email(),
+  given_name: z.string(),
+  family_name: z.string().optional(),
 })
-type UserObject = z.infer<typeof UserObjectSchema>
+export type UserObject = z.infer<typeof UserObjectSchema>
 
-router.post('/', verifyRequest(AuthCodeRequestSchema), async (req, res) => {
+router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) => {
 
   const reqData = req.body as AuthCodeRequest
 
@@ -34,16 +36,21 @@ router.post('/', verifyRequest(AuthCodeRequestSchema), async (req, res) => {
     // Decode and parse id_token
     const idTokenPayload: unknown = jwt.decode(idToken)
     const userObject = safeParse(UserObjectSchema, idTokenPayload)
-    console.log("Parsed ID_TOKEN:", userObject)
     if (!userObject) return res.sendStatus(500)
 
     // Handle db stuff
     const user = await User.findOne({ sub: userObject.sub })
     if (user) await User.updateOne({ sub: userObject.sub }, { $set: { last_login: new Date() } })
-    else await User.create({ sub: userObject.sub, email: userObject.email, last_login: new Date() })
+    else await User.create({
+      sub: userObject.sub,
+      email: userObject.email,
+      first_name: userObject.given_name,
+      last_name: userObject.family_name || "",
+      last_login: new Date()
+    })
 
-    // Sign JWT
-    const sessionToken = jwt.sign({ sub: userObject.sub }, JWT_SECRET, { expiresIn: "1h" })
+    // Sign and send sessionToken
+    const sessionToken = jwt.sign({ sub: userObject.sub }, JWT_SECRET, { expiresIn: "6h" })
     res.json({ sessionToken })
 
   } catch (error) {
