@@ -8,7 +8,7 @@ function authenticateRequest(req: Request, res: Response, next: NextFunction) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as (UserObject | undefined)
-    res.locals.user = decoded
+    res.locals.user = decoded?.sub
   } catch (error) {
     console.error(error)
     return res.status(401).json({ error: 'Invalid token' })

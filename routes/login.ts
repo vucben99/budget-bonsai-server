@@ -2,6 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { User } from '../models/User'
+import { Expense } from '../models/Expense'
 import { EnvSchemaType } from '../utils/envParser'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 import { getIdToken } from '../api/google'
@@ -41,13 +42,20 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
     // Handle db stuff
     const user = await User.findOne({ sub: userObject.sub })
     if (user) await User.updateOne({ sub: userObject.sub }, { $set: { last_login: new Date() } })
-    else await User.create({
-      sub: userObject.sub,
-      email: userObject.email,
-      first_name: userObject.given_name,
-      last_name: userObject.family_name || "",
-      last_login: new Date()
-    })
+    else {
+      await User.create({
+        sub: userObject.sub,
+        email: userObject.email,
+        first_name: userObject.given_name,
+        last_name: userObject.family_name || "",
+        last_login: new Date()
+      })
+
+      await Expense.create({
+        sub: userObject.sub,
+        expenses: []
+      })
+    }
 
     // Sign and send sessionToken
     const sessionToken = jwt.sign({ sub: userObject.sub }, JWT_SECRET, { expiresIn: "6h" })
