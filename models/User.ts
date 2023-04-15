@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType } from 'mongoose'
+import mongoose from 'mongoose'
 
 // const DefaultCategories = [
 //   { name: "Food", months: [] },
@@ -21,7 +21,5 @@ const UserSchema = new mongoose.Schema({
   last_name: { type: String, default: "" },
   last_login: { type: Date, required: true },
 })
-type UserType = InferSchemaType<typeof UserSchema>
 
-
-export const User = mongoose.model<UserType>('User', UserSchema)
+export const User = mongoose.model('User', UserSchema)
