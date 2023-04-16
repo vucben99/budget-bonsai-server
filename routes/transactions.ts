@@ -5,7 +5,8 @@ import authenticateRequest from '../middleware/authenticateRequest'
 import { User, TransactionType } from '../models/User'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 
-
+// /api/expenses route
+const router = express.Router()
 
 // Schema for request validation
 const TransactionSchema = z.object({
@@ -16,9 +17,6 @@ const TransactionSchema = z.object({
   date: z.string().nonempty(),
   category: z.string().nonempty(),
 })
-
-// /api/expenses route
-const router = express.Router()
 
 // Get all transactions // ! WORKS
 router.get('/', authenticateRequest, async (req: Request, res: Response) => {
