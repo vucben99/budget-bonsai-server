@@ -46,7 +46,7 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
   const user = res.locals.user
   const id = req.params.id
   const { name, amount, currency, date, category } = req.body as TransactionType
-  const updatedTransaction = await Transactions.findOneAndUpdate({ sub: user, 'transactions._id': id }, {
+  const updatedTransactionObj = await Transactions.findOneAndUpdate({ sub: user, 'transactions._id': id }, {
     $set: {
       'transactions.$.name': name,
       'transactions.$.amount': amount,
@@ -56,9 +56,9 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
     }
   }, { new: true })
 
-  if (!updatedTransaction) return res.status(404).json({ error: 'Transaction does not exist with given ID' })
+  if (!updatedTransactionObj) return res.status(404).json({ error: 'Transaction does not exist with given ID' })
 
-  res.json({ updatedTransaction })
+  res.json(updatedTransactionObj.transactions)
 })
 
 // Delete a transaction
