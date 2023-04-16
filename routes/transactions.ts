@@ -1,77 +1,83 @@
 import express, { Request, Response } from 'express'
+import mongoose from 'mongoose'
 import { z } from 'zod'
 import authenticateRequest from '../middleware/authenticateRequest'
-import { Transactions, TransactionsObjType } from '../models/Transactions'
+import { User, TransactionType } from '../models/User'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 
 
 
-// Schemas for request body validation
+// Schema for request validation
 const TransactionSchema = z.object({
   name: z.string().nonempty(),
   amount: z.number(),
+  type: z.string().nonempty(),
   currency: z.string().nonempty(),
   date: z.string().nonempty(),
   category: z.string().nonempty(),
 })
-type TransactionType = z.infer<typeof TransactionSchema>
-
 
 // /api/expenses route
 const router = express.Router()
 
-// Get all transactions
+// Get all transactions // ! WORKS
 router.get('/', authenticateRequest, async (req: Request, res: Response) => {
-  const transactionsObj = await Transactions.findOne<TransactionsObjType>({ sub: res.locals.user })
-  if (!transactionsObj) return res.status(404).json({ error: 'User does not exist' })
-  res.json(transactionsObj.transactions)
+  const user = await User.findOne({ sub: res.locals.user })
+  if (!user) return res.sendStatus(500)
+  const sortedTransactions = user.transactions.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
+  res.json(sortedTransactions)
 })
 
-// Add a new transaction
+// Add a new transaction // ! WORKS
 router.post('/', [authenticateRequest, verifyRequestSchema(TransactionSchema)], async (req: Request, res: Response) => {
-  const user = res.locals.user
+  const sub = res.locals.user
   const transaction = req.body as TransactionType
-  const transactionList = await Transactions.findOneAndUpdate(
-    { sub: user },
-    { $push: { transactions: transaction } },
+  const _id = new mongoose.Types.ObjectId()
+  const user = await User.findOneAndUpdate(
+    { sub },
+    { $push: { transactions: { ...transaction, _id } } },
     { new: true }
   )
-  if (!transactionList) return res.status(404).json({ error: 'User does not exist' })
-
-  res.json(transactionList.transactions)
+  if (!user) return res.sendStatus(500)
+  const newTransaction = user.transactions[user.transactions.length - 1]
+  res.status(201).json(newTransaction)
 })
 
-// Update a transaction
+// Update a transaction // ! WORKS
 router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)], async (req: Request, res: Response) => {
-  const user = res.locals.user
-  const id = req.params.id
-  const { name, amount, currency, date, category } = req.body as TransactionType
-  const updatedTransactionObj = await Transactions.findOneAndUpdate({ sub: user, 'transactions._id': id }, {
+  const transactionID = req.params.id
+  const sub = res.locals.user
+  const { name, amount, currency, type, date, category } = req.body as TransactionType
+  const user = await User.findOneAndUpdate({ sub, 'transactions._id': transactionID }, {
     $set: {
       'transactions.$.name': name,
       'transactions.$.amount': amount,
       'transactions.$.currency': currency,
+      'transactions.$.type': type,
       'transactions.$.date': date,
-      'transactions.$.category': category
+      'transactions.$.category': category,
     }
   }, { new: true })
 
-  if (!updatedTransactionObj) return res.status(404).json({ error: 'Transaction does not exist with given ID' })
+  if (!user) return res.status(404).json({ error: 'Transaction not found' })
 
-  res.json(updatedTransactionObj.transactions)
+  const updatedTransaction = user.transactions.find(transaction => transaction._id == transactionID)
+  res.json(updatedTransaction)
 })
 
-// Delete a transaction
+// Delete a transaction // ! WORKS
 router.delete('/:id', authenticateRequest, async (req: Request, res: Response) => {
-  const user = res.locals.user
+  const sub = res.locals.user
   const id = req.params.id
-  const newTransactionList = await Transactions.findOneAndUpdate(
-    { sub: user },
+  const user = await User.findOneAndUpdate(
+    { sub, 'transactions._id': id },
     { $pull: { transactions: { _id: id } } },
     { new: true }
   )
-  if (!newTransactionList) return res.status(404).json({ error: 'User does not exist' })
-  res.json(newTransactionList.transactions)
+  if (!user) return res.status(404).json({ error: 'Transaction not found' })
+  res.json({ message: 'Transaction successfully deleted' })
 })
 
 export default router

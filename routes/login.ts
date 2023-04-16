@@ -2,7 +2,6 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { User } from '../models/User'
-import { Transactions } from '../models/Transactions'
 import { EnvSchemaType } from '../utils/envParser'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 import { getIdToken } from '../api/google'
@@ -48,12 +47,8 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
         email: userObject.email,
         first_name: userObject.given_name,
         last_name: userObject.family_name || "",
-        last_login: new Date()
-      })
-
-      await Transactions.create({
-        sub: userObject.sub,
-        expenses: []
+        last_login: new Date(),
+        transactions: []
       })
     }
 
