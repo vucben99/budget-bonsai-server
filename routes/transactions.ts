@@ -33,6 +33,7 @@ router.post('/', [authenticateRequest, verifyRequestSchema(TransactionSchema)], 
   const sub = res.locals.user
   const transaction = req.body as TransactionType
   const _id = new mongoose.Types.ObjectId()
+  console.log('sub:', sub)
   const user = await User.findOneAndUpdate(
     { sub },
     { $push: { transactions: { ...transaction, _id } } },

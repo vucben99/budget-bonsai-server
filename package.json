@@ -41,5 +41,11 @@
     "nodemon": "^2.0.22",
     "supertest": "^6.3.3",
     "typescript": "^5.0.4"
+  },
+  "jest": {
+    "testMatch": [ 
+          "**/__tests__/**/*.[j]s?(x)", "**/?(*.)+(spec|test).[j]s?(x)" 
+    ],
+    "verbose": true
   }
 }

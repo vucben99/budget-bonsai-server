@@ -8,7 +8,7 @@ dotenv.config()
 
 const request = supertest(app)
 
-describe("Login route", () => {
+describe("/api/login route", () => {
   it("should send back status 400 when empty object is sent", async () => {
     // Given
     const testData = {}
