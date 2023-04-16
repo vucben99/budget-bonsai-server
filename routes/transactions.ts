@@ -11,10 +11,10 @@ const router = express.Router()
 // Schema for request validation
 const TransactionSchema = z.object({
   name: z.string().nonempty(),
-  amount: z.number(),
-  type: z.string().nonempty(),
+  amount: z.number().positive(),
+  type: z.union([z.literal('expense'), z.literal('income')]),
   currency: z.string().nonempty(),
-  date: z.string().nonempty(),
+  date: z.string().datetime(),
   category: z.string().nonempty(),
 })
 
