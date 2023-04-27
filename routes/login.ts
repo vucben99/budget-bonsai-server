@@ -21,6 +21,7 @@ export const UserObjectSchema = z.object({
   email: z.string().email(),
   given_name: z.string(),
   family_name: z.string().optional(),
+  picture: z.string().url()
 })
 export type UserObject = z.infer<typeof UserObjectSchema>
 
@@ -33,27 +34,30 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
     const idToken = await getIdToken(reqData.code)
     if (!idToken) return res.sendStatus(401)
 
-    // Decode and parse id_token
+    // Decode and safeParse id_token
     const idTokenPayload: unknown = jwt.decode(idToken)
     const userObject = safeParse(UserObjectSchema, idTokenPayload)
     if (!userObject) return res.sendStatus(500)
 
-    // Handle db stuff
+    // Handle DB stuff
     const user = await User.findOne({ sub: userObject.sub })
     if (user) await User.updateOne({ sub: userObject.sub }, { $set: { last_login: new Date() } })
     else {
       await User.create({
         sub: userObject.sub,
         email: userObject.email,
-        first_name: userObject.given_name,
-        last_name: userObject.family_name || "",
         last_login: new Date(),
         transactions: []
       })
     }
 
     // Sign and send sessionToken
-    const sessionToken = jwt.sign({ sub: userObject.sub }, JWT_SECRET, { expiresIn: "6h" })
+    const sessionToken = jwt.sign({
+      sub: userObject.sub,
+      first_name: userObject.given_name,
+      last_name: userObject.family_name || "",
+      picture: userObject.picture
+    }, JWT_SECRET, { expiresIn: "6h" })
     res.json({ sessionToken })
 
   } catch (error) {

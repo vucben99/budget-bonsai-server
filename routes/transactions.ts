@@ -5,7 +5,7 @@ import authenticateRequest from '../middleware/authenticateRequest'
 import { User, TransactionType } from '../models/User'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 
-// /api/expenses route
+// /api/transactions route
 const router = express.Router()
 
 // Schema for request validation
@@ -18,7 +18,7 @@ const TransactionSchema = z.object({
   category: z.string().nonempty(),
 })
 
-// Get all transactions // ! WORKS
+// Get all transactions
 router.get('/', authenticateRequest, async (req: Request, res: Response) => {
   const user = await User.findOne({ sub: res.locals.user })
   if (!user) return res.sendStatus(500)
@@ -28,12 +28,11 @@ router.get('/', authenticateRequest, async (req: Request, res: Response) => {
   res.json(sortedTransactions)
 })
 
-// Add a new transaction // ! WORKS
+// Add a new transaction
 router.post('/', [authenticateRequest, verifyRequestSchema(TransactionSchema)], async (req: Request, res: Response) => {
   const sub = res.locals.user
   const transaction = req.body as TransactionType
   const _id = new mongoose.Types.ObjectId()
-  console.log('sub:', sub)
   const user = await User.findOneAndUpdate(
     { sub },
     { $push: { transactions: { ...transaction, _id } } },
@@ -44,7 +43,7 @@ router.post('/', [authenticateRequest, verifyRequestSchema(TransactionSchema)], 
   res.status(201).json(newTransaction)
 })
 
-// Update a transaction // ! WORKS
+// Update a transaction
 router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)], async (req: Request, res: Response) => {
   const transactionID = req.params.id
   const sub = res.locals.user
@@ -66,7 +65,7 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
   res.json(updatedTransaction)
 })
 
-// Delete a transaction // ! WORKS
+// Delete a transaction
 router.delete('/:id', authenticateRequest, async (req: Request, res: Response) => {
   const sub = res.locals.user
   const id = req.params.id

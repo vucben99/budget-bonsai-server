@@ -35,7 +35,7 @@ export async function getIdToken(code: string): Promise<string | null> {
     return result.id_token
 
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return null
   }
 }
