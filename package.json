@@ -40,11 +40,17 @@
     "mongodb-memory-server": "^8.12.2",
     "nodemon": "^2.0.22",
     "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
   },
   "jest": {
-    "testMatch": [ 
-          "**/__tests__/**/*.[j]s?(x)", "**/?(*.)+(spec|test).[j]s?(x)" 
+    "testEnvironment": "node",
+    "testRunner": "jest-circus/runner",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.[j]s?(x)", "**/?(*.)+(spec|test).ts?(x)" 
     ],
     "verbose": true
   }

@@ -5,9 +5,11 @@ import transactions from './routes/transactions'
 
 const app = express()
 
+// Middleware
 app.use(cors())
 app.use(express.json())
 
+// Routes
 app.use('/api/login', login)
 app.use('/api/transactions', transactions)
 

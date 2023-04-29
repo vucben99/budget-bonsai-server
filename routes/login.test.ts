@@ -9,7 +9,7 @@ dotenv.config()
 const request = supertest(app)
 
 describe("/api/login route", () => {
-  it("should send back status 400 when empty object is sent", async () => {
+  it("should return status 400 when empty object is sent", async () => {
     // Given
     const testData = {}
 
@@ -20,7 +20,7 @@ describe("/api/login route", () => {
     expect(response.status).toBe(400)
   })
 
-  it("should send back status 401 when wrong auth code is sent", async () => {
+  it("should return status 401 when wrong auth code is sent", async () => {
     // Given
     const testData = { code: "fake_code" }
 
@@ -31,7 +31,7 @@ describe("/api/login route", () => {
     expect(response.status).toBe(401)
   })
 
-  it("should send back a valid mocked id_token when valid auth code is sent", async () => {
+  it("should return a valid mocked id_token when valid auth code is sent", async () => {
     // Given
     const mockedGetIdToken = jest.mocked(getIdToken)
     mockedGetIdToken.mockResolvedValueOnce("mocked id_token")

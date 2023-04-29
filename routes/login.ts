@@ -7,6 +7,7 @@ import verifyRequestSchema from '../middleware/verifyRequestSchema'
 import { getIdToken } from '../api/google'
 import { safeParse } from '../utils/safeParse'
 
+// /api/login route
 const router = express.Router()
 
 const { JWT_SECRET } = process.env as EnvSchemaType
@@ -57,7 +58,7 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
       first_name: userObject.given_name,
       last_name: userObject.family_name || "",
       picture: userObject.picture
-    }, JWT_SECRET, { expiresIn: "6h" })
+    }, JWT_SECRET, { expiresIn: "24h" })
     res.json({ sessionToken })
 
   } catch (error) {

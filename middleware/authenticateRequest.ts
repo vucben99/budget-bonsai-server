@@ -10,7 +10,7 @@ function authenticateRequest(req: Request, res: Response, next: NextFunction) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as (UserObject | undefined)
     res.locals.user = decoded?.sub
   } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' })
+    return res.sendStatus(403)
   }
   next()
 }

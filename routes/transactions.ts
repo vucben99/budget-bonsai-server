@@ -59,7 +59,7 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
     }
   }, { new: true })
 
-  if (!user) return res.status(404).json({ error: 'Transaction not found' })
+  if (!user) return res.sendStatus(404)
 
   const updatedTransaction = user.transactions.find(transaction => transaction._id == transactionID)
   res.json(updatedTransaction)
@@ -69,13 +69,20 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
 router.delete('/:id', authenticateRequest, async (req: Request, res: Response) => {
   const sub = res.locals.user
   const id = req.params.id
-  const user = await User.findOneAndUpdate(
-    { sub, 'transactions._id': id },
-    { $pull: { transactions: { _id: id } } },
-    { new: true }
-  )
-  if (!user) return res.status(404).json({ error: 'Transaction not found' })
-  res.json({ message: 'Transaction successfully deleted' })
+  try {
+    const user = await User.findOneAndUpdate(
+      { sub, 'transactions._id': id },
+      { $pull: { transactions: { _id: id } } },
+      { new: true }
+    )
+    if (!user) return res.sendStatus(404)
+    res.sendStatus(200)
+  } catch (err) {
+    res.sendStatus(404)
+    /* NOTE: If the format of the id is invalid in the URL, it will throw an error, so I should return 500.
+    If the id format is correct but it is not found in DB, it will return 404.
+    So it looks nicer and it's easier to handle to always return 404 to the client. */
+  }
 })
 
 export default router
