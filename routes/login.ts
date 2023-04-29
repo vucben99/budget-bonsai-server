@@ -2,9 +2,9 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { User } from '../models/User'
-import { EnvSchemaType } from '../utils/envParser'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 import { getIdToken } from '../api/google'
+import { EnvSchemaType } from '../utils/envParser'
 import { safeParse } from '../utils/safeParse'
 
 // /api/login route

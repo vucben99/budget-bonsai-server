@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import { z } from 'zod'
-import authenticateRequest from '../middleware/authenticateRequest'
 import { User, TransactionType } from '../models/User'
+import authenticateRequest from '../middleware/authenticateRequest'
 import verifyRequestSchema from '../middleware/verifyRequestSchema'
 
 // /api/transactions route
