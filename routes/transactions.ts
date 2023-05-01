@@ -10,12 +10,12 @@ const router = express.Router()
 
 // Schema for request validation
 const TransactionSchema = z.object({
-  name: z.string().nonempty(),
-  amount: z.number().positive(),
+  name: z.string().min(1).max(25),
+  amount: z.number().positive().max(100000000000),
   type: z.union([z.literal('expense'), z.literal('income')]),
-  currency: z.string().nonempty(),
+  currency: z.union([z.literal('HUF'), z.literal('EUR')]),
   date: z.string().datetime(),
-  category: z.string().nonempty(),
+  category: z.string().min(1).max(25),
 })
 
 // Get all transactions
