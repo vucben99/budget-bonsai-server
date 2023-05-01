@@ -9,10 +9,10 @@ const app = express()
 // Middleware
 app.use(cors())
 app.use(express.json())
-app.use((req, res, next) => {
-  console.log(`body: ${JSON.stringify(req.body)}}`)
-  next()
-})
+// app.use((req, res, next) => {
+//   console.dir(req.body)
+//   next()
+// })
 
 // Routes
 app.use('/api/login', login)

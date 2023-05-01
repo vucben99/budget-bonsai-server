@@ -48,7 +48,8 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
         sub: userObject.sub,
         email: userObject.email,
         last_login: new Date(),
-        transactions: []
+        transactions: [],
+        categories: []
       })
     }
 
@@ -61,8 +62,8 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
     }, JWT_SECRET, { expiresIn: "24h" })
     res.json({ sessionToken })
 
-  } catch (error) {
-    console.error(error)
+  } catch (err) {
+    console.error(err)
     res.status(500)
   }
 })
