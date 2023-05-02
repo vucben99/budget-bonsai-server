@@ -8,6 +8,7 @@ This is my final exam project for Codecool's Junior Fullstack API Developer cour
 
 1. Run `npm install` in the root directory
 2. Set environment variables:
+
    - Create a `.env` file in the root directory
    - Paste the following lines into the file:
      ```
@@ -21,4 +22,5 @@ This is my final exam project for Codecool's Junior Fullstack API Developer cour
      _Note: You can modify the `PORT`, however you need to be consistent with the backend port number specified in the frontend's `.env` file._
 
 3. For the development server, run `npm run dev`.
-   __Important: You'll probably have to stop the dev server and start it again after running it first, because the `dist` folder is not yet existent at the first run.__
+
+   **Important: You'll probably have to stop the dev server and start it again after running it first, because the `dist` folder is not yet existent at the first run.**
