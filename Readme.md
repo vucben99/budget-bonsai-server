@@ -23,4 +23,4 @@ This is my final exam project for Codecool's Junior Fullstack API Developer cour
 
 3. For the development server, run `npm run dev`.
 
-   **Important: You'll probably have to stop the dev server and start it again after running it first, because the `dist` folder is not yet existent at the first run.**
+   **Important:** You'll probably have to stop the dev server and start it again after running it first, because the `dist` folder is not yet existent at the first run.
