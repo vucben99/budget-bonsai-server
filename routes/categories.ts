@@ -41,16 +41,21 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(CategorySchema)], a
   const categoryID = req.params.id as unknown
   const sub = res.locals.user
   const { name } = req.body as CategoryType
-  const user = await User.findOneAndUpdate({ sub, 'categories._id': categoryID }, {
-    $set: {
-      'categories.$.name': name,
-    }
-  }, { new: true })
+  try {
+    const user = await User.findOneAndUpdate({ sub, 'categories._id': categoryID }, {
+      $set: {
+        'categories.$.name': name,
+      }
+    }, { new: true })
 
-  if (!user) return res.sendStatus(404)
+    if (!user) return res.sendStatus(404)
 
-  const updatedCategory = user.categories.find(category => category._id == categoryID)
-  res.json(updatedCategory)
+    const updatedCategory = user.categories.find(category => category._id == categoryID)
+    res.json(updatedCategory)
+  } catch (err) {
+    console.error(err)
+    res.sendStatus(404)
+  }
 })
 
 // Delete a category

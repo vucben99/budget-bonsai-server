@@ -380,6 +380,25 @@ describe('PUT /api/transactions/:id', () => {
     // Then
     expect(response.status).toBe(403)
   })
+  it('should return status 404 when the transaction does not exist', async () => {
+    // Given
+    const token = FakeUserJWT
+
+    const updatedTransaction = {
+      name: 'Updated transaction',
+      amount: 400000,
+      type: 'income',
+      currency: 'HUF',
+      category: 'Salary',
+      date: '2022-01-02T00:00:00.000Z'
+    }
+
+    // When
+    const response = await request(app).put('/api/transactions/NON_EXISTENT_TRANSACTION').set({ Authorization: `Bearer ${token}` }).send(updatedTransaction)
+
+    // Then
+    expect(response.status).toBe(404)
+  })
 })
 
 describe('DELETE /api/transactions/:id', () => {

@@ -48,21 +48,26 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
   const transactionID = req.params.id
   const sub = res.locals.user
   const { name, amount, currency, type, date, category } = req.body as TransactionType
-  const user = await User.findOneAndUpdate({ sub, 'transactions._id': transactionID }, {
-    $set: {
-      'transactions.$.name': name,
-      'transactions.$.amount': amount,
-      'transactions.$.currency': currency,
-      'transactions.$.type': type,
-      'transactions.$.date': date,
-      'transactions.$.category': category,
-    }
-  }, { new: true })
+  try {
+    const user = await User.findOneAndUpdate({ sub, 'transactions._id': transactionID }, {
+      $set: {
+        'transactions.$.name': name,
+        'transactions.$.amount': amount,
+        'transactions.$.currency': currency,
+        'transactions.$.type': type,
+        'transactions.$.date': date,
+        'transactions.$.category': category,
+      }
+    }, { new: true })
 
-  if (!user) return res.sendStatus(404)
+    if (!user) return res.sendStatus(404)
 
-  const updatedTransaction = user.transactions.find(transaction => transaction._id == transactionID)
-  res.json(updatedTransaction)
+    const updatedTransaction = user.transactions.find(transaction => transaction._id == transactionID)
+    res.json(updatedTransaction)
+  } catch (err) {
+    console.log(err)
+    res.sendStatus(404)
+  }
 })
 
 // Delete a transaction
