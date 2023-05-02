@@ -12,7 +12,7 @@ This is my final exam project for Codecool's Junior Fullstack API Developer cour
    - Paste the following lines into the file:
      ```
       PORT=<port>
-      MONGODB_URI=_<Your MongoDB URI>_
+      MONGODB_URI=<Your MongoDB URI>
       GOOGLE_CLIENT_ID=570549999643-v2v38o9f648bi092dnbo4qigqp02sb4k.apps.googleusercontent.com
       GOOGLE_CLIENT_SECRET=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
       JWT_SECRET=<Your secret key>
