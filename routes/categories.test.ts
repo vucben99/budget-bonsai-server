@@ -283,3 +283,96 @@ describe('PUT /api/categories/:id', () => {
     expect(response.status).toBe(403)
   })
 })
+
+describe('DELETE /api/categories/:id', () => {
+  beforeAll(connect)
+  beforeEach(cleanData)
+  beforeEach(addTestUserToDB)
+  afterAll(disconnect)
+
+  it('should return status 200 when the user is authenticated', async () => {
+    // Given
+    const token = FakeUserJWT
+
+    // --- Mock category in the database
+    const categories = [
+      {
+        name: 'Category 1',
+        _id: '60eb9c9a75636100127a0526'
+      }
+    ]
+
+    const user = await User.findOneAndUpdate(
+      { sub: '1234567890' },
+      { $set: { categories } },
+      { new: true }
+    )
+
+    // When
+    const response = await request(app).delete('/api/categories/60eb9c9a75636100127a0526').set({ Authorization: `Bearer ${token}` })
+
+    // Then
+    expect(response.status).toBe(200)
+    expect(response.body).toMatchObject({})
+  })
+
+  it('should return status 401 when client does not send token', async () => {
+    // Given
+    // -- No auth header
+
+    // --- Mock category in the database
+    const categories = [
+      {
+        name: 'Category 1',
+        _id: '60eb9c9a75636100127a0526'
+      }
+    ]
+    const user = await User.findOneAndUpdate(
+      { sub: '1234567890' },
+      { $set: { categories } },
+      { new: true }
+    )
+
+    // When
+    const response = await request(app).delete('/api/categories/60eb9c9a75636100127a0526')
+
+    // Then
+    expect(response.status).toBe(401)
+  })
+
+  it('should return status 403 when client sends invalid token', async () => {
+    // Given
+    const token = 'invalid token'
+
+    // --- Mock category in the database
+    const categories = [
+      {
+        name: 'Category 1',
+        _id: '60eb9c9a75636100127a0526'
+      }
+    ]
+
+    const user = await User.findOneAndUpdate(
+      { sub: '1234567890' },
+      { $set: { categories } },
+      { new: true }
+    )
+
+    // When
+    const response = await request(app).delete('/api/categories/60eb9c9a75636100127a0526').set({ Authorization: `Bearer ${token}` })
+
+    // Then
+    expect(response.status).toBe(403)
+  })
+
+  it('should return status 404 when the category does not exist', async () => {
+    // Given
+    const token = FakeUserJWT
+
+    // When
+    const response = await request(app).delete('/api/categories/NON_EXISTENT_TRANSACTION').set({ Authorization: `Bearer ${token}` })
+
+    // Then
+    expect(response.status).toBe(404)
+  })
+})

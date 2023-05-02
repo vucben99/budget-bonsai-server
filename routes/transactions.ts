@@ -65,7 +65,7 @@ router.put('/:id', [authenticateRequest, verifyRequestSchema(TransactionSchema)]
     const updatedTransaction = user.transactions.find(transaction => transaction._id == transactionID)
     res.json(updatedTransaction)
   } catch (err) {
-    console.log(err)
+    console.error(err)
     res.sendStatus(404)
   }
 })
