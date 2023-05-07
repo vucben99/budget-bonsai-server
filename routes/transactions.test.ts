@@ -10,13 +10,15 @@ import {
 import app from '../app'
 import { User } from '../models/User'
 
+
+beforeAll(connect)
+beforeEach(cleanData)
+beforeEach(addTestUserToDB)
+afterAll(disconnect)
+
 const FakeUserJWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ihqwpjj9-exyi9zupZ5mmam_E6cups5oDJ0LpJTp4Ho'
 
 describe('GET /api/transactions', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 and all transactions of the authenticated user, sorted by date in descending order', async () => {
     // Given
@@ -118,10 +120,6 @@ describe('GET /api/transactions', () => {
 })
 
 describe('POST /api/transactions', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   const FakeUserJWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ihqwpjj9-exyi9zupZ5mmam_E6cups5oDJ0LpJTp4Ho'
 
@@ -218,10 +216,6 @@ describe('POST /api/transactions', () => {
 })
 
 describe('PUT /api/transactions/:id', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 and the updated transaction when the user is authenticated', async () => {
     // Given
@@ -402,10 +396,6 @@ describe('PUT /api/transactions/:id', () => {
 })
 
 describe('DELETE /api/transactions/:id', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 when the user is authenticated', async () => {
     // Given

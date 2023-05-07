@@ -10,13 +10,14 @@ import {
 import app from '../app'
 import { User } from '../models/User'
 
+beforeAll(connect)
+beforeEach(cleanData)
+beforeEach(addTestUserToDB)
+afterAll(disconnect)
+
 const FakeUserJWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ihqwpjj9-exyi9zupZ5mmam_E6cups5oDJ0LpJTp4Ho'
 
 describe('GET /api/categories', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 and all categories of the authenticated user', async () => {
     // Given
@@ -88,10 +89,6 @@ describe('GET /api/categories', () => {
 })
 
 describe('POST /api/categories', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   const FakeUserJWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ihqwpjj9-exyi9zupZ5mmam_E6cups5oDJ0LpJTp4Ho'
 
@@ -163,10 +160,6 @@ describe('POST /api/categories', () => {
 })
 
 describe('PUT /api/categories/:id', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 and the updated category when the user is authenticated', async () => {
     // Given
@@ -285,10 +278,6 @@ describe('PUT /api/categories/:id', () => {
 })
 
 describe('DELETE /api/categories/:id', () => {
-  beforeAll(connect)
-  beforeEach(cleanData)
-  beforeEach(addTestUserToDB)
-  afterAll(disconnect)
 
   it('should return status 200 when the user is authenticated', async () => {
     // Given
