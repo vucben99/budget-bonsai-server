@@ -1,5 +1,6 @@
 FROM node:18-alpine
-ADD . /appdir
-WORKDIR /appdir
-CMD [ "npm", "start" ]
-EXPOSE 3003
+WORKDIR /app
+COPY . .
+RUN npm install
+EXPOSE 8000
+CMD ["npm", "start"]
