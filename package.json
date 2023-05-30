@@ -2,11 +2,11 @@
   "name": "budget-bonsai-server",
   "version": "1.0.0",
   "description": "Server for BudgetBonsai app",
-  "main": "index.js",
+  "main": "start.js",
   "scripts": {
     "test": "jest",
     "build": "npx tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/start.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/start.js\""
   },
   "repository": {
