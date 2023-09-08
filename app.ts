@@ -7,8 +7,9 @@ import categories from './routes/categories'
 const app = express()
 
 // Middleware
-app.use(cors())
-app.options('*', cors())
+app.use(cors({
+  origin: 'https://budgetbonsai.netlify.app',
+}))
 app.use(express.json())
 
 // Routes
