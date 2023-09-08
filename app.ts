@@ -7,7 +7,12 @@ import categories from './routes/categories'
 const app = express()
 
 // Middleware
-app.use(cors({origin: true}))
+const corsOptions = {
+   origin: '*', 
+   credentials: true,
+   optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
 app.use(express.json())
 
 // Routes
