@@ -7,7 +7,7 @@ import categories from './routes/categories'
 const app = express()
 
 // Middleware
-app.use(cors())
+app.use(cors({origin: true}))
 app.use(express.json())
 
 // Routes
