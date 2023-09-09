@@ -31,11 +31,13 @@ export async function getIdToken(code: string): Promise<string | null> {
     })
 
     const result = safeParse(IDTokenResponseSchema, response.data)
+    console.log("safeParse result: ", result)
     if (!result) return null
     return result.id_token
 
   } catch (error) {
     console.error(error)
+    console.log("catch ágba futott a getIdToken")
     return null
   }
 }

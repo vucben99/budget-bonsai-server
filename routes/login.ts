@@ -33,7 +33,7 @@ router.post('/', verifyRequestSchema(AuthCodeRequestSchema), async (req, res) =>
   try {
     // Get id_token from Google
     const idToken = await getIdToken(reqData.code)
-    console.log(idToken)
+    console.log("id_token: ", idToken)
     if (!idToken) return res.send({
       error: "id_token error"
     }).status(401)
