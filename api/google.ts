@@ -21,15 +21,15 @@ const IDTokenResponseSchema = z.object({
 })
 
 export async function getIdToken(code: string): Promise<string | null> {
+  let response
   try {
-    const response = await axios.post(url, {
+    response = await axios.post(url, {
       code,
       client_id: GOOGLE_CLIENT_ID,
       client_secret: GOOGLE_CLIENT_SECRET,
       redirect_uri: REDIRECT_URI,
       grant_type: "authorization_code",
     })
-    console.log("google response: ", response)
 
     const result = safeParse(IDTokenResponseSchema, response.data)
     if (!result) return null
@@ -37,6 +37,7 @@ export async function getIdToken(code: string): Promise<string | null> {
 
   } catch (error) {
     console.log(error)
+    console.log("GOOGLE RESPONSE: ", response)
     console.log("catch ágba futott a getIdToken")
     return null
   }
