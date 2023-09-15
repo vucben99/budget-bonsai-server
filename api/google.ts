@@ -22,14 +22,19 @@ const IDTokenResponseSchema = z.object({
 
 export async function getIdToken(code: string): Promise<string | null> {
   let response
+
+  const data = {
+    code,
+    client_id: GOOGLE_CLIENT_ID,
+    client_secret: GOOGLE_CLIENT_SECRET,
+    redirect_uri: REDIRECT_URI,
+    grant_type: "authorization_code",
+  }
+
+  console.log("data: ", data)
+
   try {
-    response = await axios.post(url, {
-      code,
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
-      redirect_uri: REDIRECT_URI,
-      grant_type: "authorization_code",
-    })
+    response = await axios.post(url, data)
 
     const result = safeParse(IDTokenResponseSchema, response.data)
     if (!result) return null
