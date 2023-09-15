@@ -9,6 +9,8 @@ const {
   REDIRECT_URI
 } = process.env as EnvSchemaType
 
+console.log("REDIRECT_URI FROM ENV: ", REDIRECT_URI)
+
 const url = "https://oauth2.googleapis.com/token"
 
 const IDTokenResponseSchema = z.object({
